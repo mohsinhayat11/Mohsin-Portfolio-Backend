@@ -8,13 +8,10 @@ const connectDB = async () => {
   try {
     console.log("Connecting to MongoDB...");
 
-    await mongoose.connect(
-      "mongodb+srv://mohsinmalak13:Mohsin12345@cluster0.el68ori.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-      {
-        family: 4,
-        serverSelectionTimeoutMS: 10000,
-      }
-    );
+    await mongoose.connect(process.env.MONGODB_URI, {
+      family: 4,
+      serverSelectionTimeoutMS: 10000,
+    });
 
     console.log("MongoDB Connected Successfully");
   } catch (error) {

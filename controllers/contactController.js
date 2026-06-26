@@ -1,29 +1,38 @@
 const Contact = require("../models/Contact");
-const brevo = require("@getbrevo/brevo");
+const {
+  TransactionalEmailsApi,
+  TransactionalEmailsApiApiKeys,
+} = require("@getbrevo/brevo");
 
 const createContact = async (req, res) => {
   try {
     // Save in MongoDB
     const contact = await Contact.create(req.body);
 
-    // Email Transporter
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      secure: false,
-      requireTLS: true,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });   
+    // Brevo API
+    const emailApi = new TransactionalEmailsApi();
 
-    // Send Email
-    await transporter.sendMail({
-      from: process.env.SMTP_USER,
-      to: process.env.RECEIVER_EMAIL,
+    emailApi.setApiKey(
+      TransactionalEmailsApiApiKeys.apiKey,
+      process.env.BREVO_API_KEY
+    );
+
+    await emailApi.sendTransacEmail({
+      sender: {
+        name: "Mohsin Portfolio",
+        email: process.env.RECEIVER_EMAIL,
+      },
+
+      to: [
+        {
+          email: process.env.RECEIVER_EMAIL,
+          name: "Mohsin",
+        },
+      ],
+
       subject: "New Portfolio Contact Message",
-      html: `
+
+      htmlContent: `
         <h2>New Contact Form Submission</h2>
 
         <p><strong>Name:</strong> ${req.body.name}</p>

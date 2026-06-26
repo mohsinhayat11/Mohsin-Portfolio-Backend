@@ -1,5 +1,5 @@
 const Contact = require("../models/Contact");
-const nodemailer = require("nodemailer");
+const brevo = require("@getbrevo/brevo");
 
 const createContact = async (req, res) => {
   try {

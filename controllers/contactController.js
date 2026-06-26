@@ -3,11 +3,17 @@ const axios = require("axios");
 
 const createContact = async (req, res) => {
   try {
+    console.log("========== NEW REQUEST ==========");
+    console.log("Request Body:", req.body);
+
     // Save in MongoDB
     const contact = await Contact.create(req.body);
 
+    console.log("✅ Saved Contact:");
+    console.log(contact);
+
     // Send Email using Brevo API
-    await axios.post(
+    const emailResponse = await axios.post(
       "https://api.brevo.com/v3/smtp/email",
       {
         sender: {
@@ -41,14 +47,22 @@ const createContact = async (req, res) => {
       }
     );
 
+    console.log("✅ Email Sent Successfully");
+    console.log(emailResponse.data);
+
     res.status(201).json({
       success: true,
       contact,
     });
+
   } catch (error) {
-    console.log(
-      error.response ? error.response.data : error.message
-    );
+    console.log("❌ ERROR OCCURRED");
+
+    if (error.response) {
+      console.log(error.response.data);
+    } else {
+      console.log(error);
+    }
 
     res.status(500).json({
       success: false,
@@ -63,6 +77,8 @@ const getContacts = async (req, res) => {
 
     res.status(200).json(contacts);
   } catch (error) {
+    console.log(error);
+
     res.status(500).json({
       message: error.message,
     });

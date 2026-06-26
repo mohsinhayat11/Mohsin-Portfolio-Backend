@@ -1,56 +1,54 @@
 const Contact = require("../models/Contact");
-const {
-  TransactionalEmailsApi,
-  TransactionalEmailsApiApiKeys,
-} = require("@getbrevo/brevo");
+const axios = require("axios");
 
 const createContact = async (req, res) => {
   try {
     // Save in MongoDB
     const contact = await Contact.create(req.body);
 
-    // Brevo API
-    const emailApi = new TransactionalEmailsApi();
-
-    emailApi.setApiKey(
-      TransactionalEmailsApiApiKeys.apiKey,
-      process.env.BREVO_API_KEY
-    );
-
-    await emailApi.sendTransacEmail({
-      sender: {
-        name: "Mohsin Portfolio",
-        email: process.env.RECEIVER_EMAIL,
-      },
-
-      to: [
-        {
+    // Send Email using Brevo API
+    await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: {
+          name: "Mohsin Portfolio",
           email: process.env.RECEIVER_EMAIL,
-          name: "Mohsin",
         },
-      ],
+        to: [
+          {
+            email: process.env.RECEIVER_EMAIL,
+            name: "Mohsin",
+          },
+        ],
+        subject: "New Portfolio Contact Message",
+        htmlContent: `
+          <h2>New Contact Form Submission</h2>
 
-      subject: "New Portfolio Contact Message",
+          <p><strong>Name:</strong> ${req.body.name}</p>
 
-      htmlContent: `
-        <h2>New Contact Form Submission</h2>
+          <p><strong>Email:</strong> ${req.body.email}</p>
 
-        <p><strong>Name:</strong> ${req.body.name}</p>
+          <p><strong>Message:</strong></p>
 
-        <p><strong>Email:</strong> ${req.body.email}</p>
-
-        <p><strong>Message:</strong></p>
-
-        <p>${req.body.message}</p>
-      `,
-    });
+          <p>${req.body.message}</p>
+        `,
+      },
+      {
+        headers: {
+          "api-key": process.env.BREVO_API_KEY,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     res.status(201).json({
       success: true,
       contact,
     });
   } catch (error) {
-    console.log(error);
+    console.log(
+      error.response ? error.response.data : error.message
+    );
 
     res.status(500).json({
       success: false,

@@ -1,14 +1,14 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend API for Mohsin Portfolio with JWT Authentication, MongoDB Atlas, and Brevo Email Integration.",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Mohsin Hayat",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {

@@ -5,6 +5,7 @@ const express = require("express");
 const connectDB = require("./config/db");
 const contactRoutes = require("./routes/contactRoutes");
 const cors = require("cors");
+const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 
@@ -17,6 +18,7 @@ connectDB();
 
 // Routes
 app.use("/api/contact", contactRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Home Route
 app.get("/", (req, res) => {
